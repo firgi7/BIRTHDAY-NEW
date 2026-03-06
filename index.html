@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selamat Ulang Tahun Nuraisyah!</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* --- CSS UTAMA --- */
+    body {
+        background-color: #000;
+        color: #FF1493;
+        font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    /* Container Login */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        width: 100%;
+        background-color: #000;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .terminal-login {
+        width: 90%;
+        max-width: 450px;
+        border: 2px solid #FF1493;
+        padding: 30px;
+        box-shadow: 0 0 20px #FF1493;
+        background-color: rgba(50, 0, 30, 0.4);
+        text-align: center;
+    }
+
+    .terminal-login input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid #FF1493;
+        color: #FF1493;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .terminal-login button {
+        background: #FF1493;
+        color: #000;
+        border: none;
+        padding: 12px 25px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    /* Lapisan Animasi */
+    .overlay-screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        pointer-events: none;
+        background: transparent;
+    }
+
+    #matrixCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    /* Animasi Teks Besar (Countdown & Words) */
+    .big-text {
+        font-size: clamp(4em, 15vw, 10em);
+        font-weight: bold;
+        color: #FF1493;
+        text-shadow: 0 0 20px #FF1493, 0 0 40px #FF1493;
+        opacity: 0;
+        position: absolute;
+    }
+
+    @keyframes textPop {
+        0% { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+        50% { opacity: 1; transform: scale(1.1); filter: blur(0px); }
+        100% { opacity: 0; transform: scale(1.5); filter: blur(5px); }
+    }
+
+    /* Animasi Hati (Puncak Video) */
+    .heart-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeIn 2s forwards;
+    }
+
+    .heart-icon {
+        font-size: 8em;
+        color: #FF1493;
+        text-shadow: 0 0 30px #FF1493, 0 0 60px #FF1493;
+        animation: heartBeat 1.2s infinite;
+    }
+
+    .heart-text {
+        font-size: 2em;
+        margin-top: 20px;
+        color: #FFF;
+        text-shadow: 0 0 10px #FF1493;
+        font-weight: bold;
+    }
+
+    @keyframes heartBeat {
+        0% { transform: scale(1); }
+        15% { transform: scale(1.15); }
+        30% { transform: scale(1); }
+        45% { transform: scale(1.15); }
+        60% { transform: scale(1); }
+    }
+
+    /* Modal Kado / Kue */
+    .gift-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 500;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cake-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        cursor: pointer;
+    }
+
+    .cake {
+        width: 160px;
+        height: 100px;
+        background: #FF1493;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 0 20px #FF1493;
+    }
+
+    .candle {
+        width: 10px;
+        height: 40px;
+        background: #fff;
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .flame {
+        width: 15px;
+        height: 25px;
+        background: #FFD700;
+        border-radius: 50%;
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 15px #FFD700;
+        animation: flicker 0.1s infinite;
+    }
+
+    @keyframes flicker { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+    .flame.blown { display: none; }
+
+    /* Akhiran Pesan */
+    .final-card {
+        width: 90%;
+        max-width: 500px;
+        background: #111;
+        border: 2px solid #FF1493;
+        padding: 40px;
+        text-align: center;
+        display: none;
+        box-shadow: 0 0 30px #FF1493;
+    }
+
+    .reveal-button {
+        padding: 10px 25px;
+        background: #FF1493;
+        color: #000;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 5px;
+        text-transform: uppercase;
+    }
+
+    #confettiCanvas { position: absolute; inset: 0; pointer-events: none; }
+    .hidden { display: none !important; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <!-- Login -->
+  <div class="login-container" id="loginContainer">
+    <div class="terminal-login">
+      <p>AUTHENTICATION REQUIRED</p>
+      <input type="password" id="passwordInput" placeholder="Masukkan Kode (27022003)" autofocus>
+      <button id="authBtn">ACCESS DATABASE</button>
+      <p id="errorMsg" style="color: red; margin-top: 10px;"></p>
+    </div>
+  </div>
+
+  <!-- Background Matrix -->
+  <canvas id="matrixCanvas"></canvas>
+
+  <!-- Overlay Animasi (Urutan Video) -->
+  <div class="overlay-screen">
+    <div id="bigText" class="big-text"></div>
+    
+    <!-- Puncak Video: Hati Neon -->
+    <div class="heart-container" id="heartContainer">
+        
+        <div class="heart-text">HAPPY BIRTHDAY Eris! </div>
+    </div>
+  </div>
+
+  <!-- Modal Kado (Ending Kue) -->
+  <div class="gift-modal" id="giftModal">
+      <canvas id="confettiCanvas"></canvas>
+      
+      <div id="cakeSection" style="text-align: center;">
+          <div class="cake-container" id="cakeContainer">
+              <div class="candle"><div class="flame" id="flame"></div></div>
+              <div class="cake"></div>
+          </div>
+          <p style="color: #FFF; margin-top: 20px; text-shadow: 0 0 5px #FF1493;">Tiup lilinnya (Klik kue!)</p>
+      </div>
+
+      <div class="final-card" id="finalCard">
+          <p style="color: #FF69B4; line-height: 1.8; font-size: 1.2em;">
+              Happy Birthday eris! Selamat bertambah usia, semoga panjang umur sehat terus, moga makin sukses ke depannya.
+          </p>
+          <br>
+          <button class="reveal-button" style="background: transparent; border: 1px solid #FF1493; color: #FF1493; font-size: 0.8em; margin-top: 20px;" onclick="location.reload()">LOGOUT</button>
+      </div>
+  </div>
+
+  <audio id="bgMusic" loop>
+      <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const authBtn = document.getElementById('authBtn');
+        const passIn = document.getElementById('passwordInput');
+        const loginDiv = document.getElementById('loginContainer');
+        const bigText = document.getElementById('bigText');
+        const heartContainer = document.getElementById('heartContainer');
+        const giftModal = document.getElementById('giftModal');
+        const cakeContainer = document.getElementById('cakeContainer');
+        const flame = document.getElementById('flame');
+        const finalCard = document.getElementById('finalCard');
+        const bgMusic = document.getElementById('bgMusic');
+
+        // Matrix Logic
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        let columns, drops = [];
+        function initMatrix() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            columns = Math.floor(canvas.width / 16);
+            drops = Array(columns).fill(1).map(() => Math.random() * -100);
+        }
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#FF1493";
+            ctx.font = "16px monospace";
+            drops.forEach((y, i) => {
+                const char = String.fromCharCode(0x30A0 + Math.random() * 96);
+                ctx.fillText(char, i * 16, y * 16);
+                if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+
+        // Animasi Urutan (Persis seperti Video)
+        async function runVideoSequence() {
+            const sequence = ['3', '2', '1', 'HAPPY', 'BIRTHDAY', 'ERIS'];
+            
+            for (let item of sequence) {
+                bigText.textContent = item;
+                bigText.style.animation = 'none';
+                void bigText.offsetWidth; // trigger reflow
+                bigText.style.animation = 'textPop 1.2s forwards';
+                await new Promise(r => setTimeout(r, 1200));
+            }
+
+            // Munculkan Hati
+            heartContainer.style.display = 'flex';
+            await new Promise(r => setTimeout(r, 3500));
+            
+            // Masuk ke Ending: Kue Ulang Tahun
+            heartContainer.style.display = 'none';
+            giftModal.style.display = 'flex';
+        }
+
+        authBtn.addEventListener('click', () => {
+            if (passIn.value === "0603") {
+                loginDiv.style.display = 'none';
+                bgMusic.play().catch(() => {});
+                initMatrix();
+                setInterval(drawMatrix, 35);
+                runVideoSequence();
+            } else {
+                document.getElementById('errorMsg').textContent = "ACCESS DENIED.";
+            }
+        });
+
+        // Tiup Lilin Logic
+        cakeContainer.addEventListener('click', () => {
+            flame.classList.add('blown');
+            document.getElementById('cakeSection').style.display = 'none';
+            finalCard.style.display = 'block';
+            startConfetti();
+        });
+
+        // Confetti Simple
+        const cCanvas = document.getElementById('confettiCanvas');
+        const cCtx = cCanvas.getContext('2d');
+        function startConfetti() {
+            cCanvas.width = window.innerWidth;
+            cCanvas.height = window.innerHeight;
+            let particles = Array(80).fill(0).map(() => ({
+                x: Math.random() * cCanvas.width,
+                y: Math.random() * cCanvas.height - cCanvas.height,
+                v: Math.random() * 5 + 2,
+                s: Math.random() * 8 + 2
+            }));
+            function draw() {
+                cCtx.clearRect(0,0, cCanvas.width, cCanvas.height);
+                cCtx.fillStyle = "#FF1493";
+                particles.forEach(p => {
+                    p.y += p.v;
+                    cCtx.fillRect(p.x, p.y, p.s, p.s);
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    });
+  </script>
+</body>
+</html>
